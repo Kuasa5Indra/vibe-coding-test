@@ -50,4 +50,22 @@ export const usersRoute = new Elysia({ prefix: '/api/users' })
         }
 
         return result;
+    })
+    .delete('/logout', async ({ headers, set }) => {
+        const authHeader = headers['authorization'];
+
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            set.status = 401;
+            return { error: "Unauthorized" };
+        }
+
+        const token = authHeader.split(' ')[1];
+        const result = await UsersService.logoutUser(token);
+
+        if (result.error) {
+            set.status = 401;
+            return result;
+        }
+
+        return result;
     });
