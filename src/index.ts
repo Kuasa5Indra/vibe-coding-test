@@ -1,7 +1,13 @@
 import { Elysia } from 'elysia';
 import { usersRoute } from './routes/users-route';
 
-const app = new Elysia()
+export const app = new Elysia()
+  .onError(({ code, error, set }) => {
+    if (code === 'VALIDATION') {
+      set.status = 400;
+      return error;
+    }
+  })
   .use(usersRoute)
   .get('/', () => ({
     status: 'ok',
