@@ -61,4 +61,25 @@ export class UsersService {
 
         return { data: token };
     }
+
+    static async getCurrentUser(token: string) {
+        // 1. Fetch session and user in one go
+        const result = await db.select({
+            id: users.id,
+            name: users.name,
+            email: users.email,
+            createdAt: users.createdAt
+        })
+        .from(sessions)
+        .innerJoin(users, eq(sessions.userId, users.id))
+        .where(eq(sessions.token, token));
+
+        const user = result[0];
+
+        if (!user) {
+            return { error: "Unauthorized" };
+        }
+
+        return { data: user };
+    }
 }
